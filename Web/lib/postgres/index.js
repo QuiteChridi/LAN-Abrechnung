@@ -237,7 +237,7 @@ let GetHauptGuestofguest = function (user_id) {
  */
 let GetSubGuestFromHauptGuest = function (user_id) {
   return new Promise(function (resolve, reject) {
-    pool.query(`SELECT username, lang, userid, expected_arrival, expected_departure, payed, payed_ammount FROM guests WHERE hauptgast_userid = '${user_id}'`, (err, result) => {
+    pool.query(`SELECT username, lang, userid, expected_arrival, expected_departure, payed, payed_ammount FROM guests WHERE hauptgast_userid = '${user_id}' ORDER BY username ASC`, (err, result) => {
       if (err) { reject(err) }
       resolve(result.rows);
     });
@@ -988,7 +988,7 @@ let GetPlugs = function () {
 let SetUserIDForPlug = function (PlugID, UserName) {
   return new Promise(function (resolve, reject) {
     pool.query(`UPDATE plugs SET userid = CASE
-                WHEN EXISTS (SELECT userid FROM guests WHERE username = $1) 
+                WHEN EXISTS (SELECT userid FROM guests WHERE username = $1 AND hauptgast_userid IS NULL) 
                 THEN (SELECT userid FROM guests WHERE username = $1)
                 ELSE 0
                 END WHERE plugid = $2`, [
